@@ -7,6 +7,7 @@ import { NfeModule } from './nfe/nfe.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ envFilePath: '.env', isGlobal: true }),
+   
     NfeModule,
   ],
   controllers: [AppController],

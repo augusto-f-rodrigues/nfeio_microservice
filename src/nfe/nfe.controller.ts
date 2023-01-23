@@ -1,7 +1,15 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Put } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Delete,
+  Put,
+} from '@nestjs/common';
 import { NfeService } from './nfe.service';
 import { CreateNfeDto } from './dto/create-nfe.dto';
-
+import { CreateCcNfeDto } from './dto/create-cc-nfe.dto';
 
 @Controller('nfe')
 export class NfeController {
@@ -9,8 +17,8 @@ export class NfeController {
 
   /**
    * Request to create invoice
-   * @param createNfeDto 
-   * @returns 
+   * @param createNfeDto
+   * @returns
    */
   @Post()
   create(@Body() createNfeDto: CreateNfeDto) {
@@ -29,16 +37,18 @@ export class NfeController {
 
   /**
    * Send a correction letter to invoice
-   * @param id 
+   * @param id Product Invoice Id
    * @returns 
    */
-  @Put()
-
+  @Put(':id')
+  async createCc(@Param('id') id: string, @Body() createCcDTO: CreateCcNfeDto) {
+    return await this.nfeService.createCc(id, createCcDTO);
+  }
 
   /**
    * Request to cancel invoice
-   * @param id 
-   * @returns 
+   * @param id
+   * @returns
    */
   @Delete(':id')
   remove(@Param('id') id: string) {
