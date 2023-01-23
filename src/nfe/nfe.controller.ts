@@ -1,7 +1,15 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Put } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Put,
+} from '@nestjs/common';
 import { NfeService } from './nfe.service';
 import { CreateNfeDto } from './dto/create-nfe.dto';
-
 
 @Controller('nfe')
 export class NfeController {
@@ -9,8 +17,8 @@ export class NfeController {
 
   /**
    * Request to create invoice
-   * @param createNfeDto 
-   * @returns 
+   * @param createNfeDto
+   * @returns
    */
   @Post()
   create(@Body() createNfeDto: CreateNfeDto) {
@@ -22,23 +30,22 @@ export class NfeController {
     return this.nfeService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.nfeService.findOne(+id);
+  @Get('/pdf/:id')
+  getNfPdf(@Param('id') id: string) {
+    return this.nfeService.getNfPdf(id);
   }
 
   /**
    * Send a correction letter to invoice
-   * @param id 
-   * @returns 
+   * @param id
+   * @returns
    */
   @Put()
 
-
   /**
    * Request to cancel invoice
-   * @param id 
-   * @returns 
+   * @param id
+   * @returns
    */
   @Delete(':id')
   remove(@Param('id') id: string) {
