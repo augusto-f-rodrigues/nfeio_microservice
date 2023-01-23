@@ -25,9 +25,9 @@ export class NfeController {
     return this.nfeService.create(createNfeDto);
   }
 
-  @Get()
-  findAll() {
-    return this.nfeService.findAll();
+  @Get('/json/:id')
+  getNfJson(@Param('id') id: string) {
+    return this.nfeService.getNfJson(id);
   }
 
   @Get('/pdf/:id')

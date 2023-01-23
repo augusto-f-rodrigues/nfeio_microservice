@@ -25,8 +25,14 @@ export class NfeService {
     return 'This action adds a new nfe';
   }
 
-  findAll() {
-    return `This action returns all nfe`;
+  async getNfJson(id: string): Promise<any> {
+    const { data } = await lastValueFrom(
+      this.httpService.get(
+        `${this.http}/${process.env.NFE_COMPANY_ID}/productinvoices/${id}?apikey=${process.env.NFE_API_KEY}`,
+      ),
+    );
+
+    return data;
   }
 
   async getNfPdf(id: string): Promise<any> {
