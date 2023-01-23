@@ -9,7 +9,9 @@ import {
 } from '@nestjs/common';
 import { NfeService } from './nfe.service';
 import { CreateNfeDto } from './dto/create-nfe.dto';
+
 import { CreateCcNfeDto } from './dto/create-cc-nfe.dto';
+
 
 @Controller('nfe')
 export class NfeController {
@@ -25,18 +27,19 @@ export class NfeController {
     return this.nfeService.create(createNfeDto);
   }
 
-  @Get()
-  findAll() {
-    return this.nfeService.findAll();
+  @Get('/json/:id')
+  getNfJson(@Param('id') id: string) {
+    return this.nfeService.getNfJson(id);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.nfeService.findOne(+id);
+  @Get('/pdf/:id')
+  getNfPdf(@Param('id') id: string) {
+    return this.nfeService.getNfPdf(id);
   }
 
   /**
    * Send a correction letter to invoice
+
    * @param id Product Invoice Id
    * @returns 
    */
@@ -45,13 +48,19 @@ export class NfeController {
     return await this.nfeService.createCc(id, createCcDTO);
   }
 
+
   /**
    * Request to cancel invoice
    * @param id
    * @returns
    */
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.nfeService.remove(+id);
+  @Delete('/:id')
+  async DeleteInvoice(@Param('id') id: string) {
+    const invoiceRemove = await this.nfeService.removeNFE(id);
+    try {
+      return invoiceRemove;
+    } catch (error) {
+      return error.message;
+    }
   }
 }

@@ -1,3 +1,4 @@
+
 declare namespace Nfeio {
   interface CreateCcResponse {
     accountId: string;
@@ -5,4 +6,13 @@ declare namespace Nfeio {
     productInvoiceId: string;
     reason: string;
   }
+  
+  interface DeleteNFeIO {
+    accountId: string;
+    companyId: string;
+    productInvoiceId: string;
+    reason: string;
+  }
 }
+
+
