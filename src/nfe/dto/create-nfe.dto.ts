@@ -1,5 +1,8 @@
-import { Type } from "class-transformer";
-import { IsArray, ValidateNested } from "class-validator/types/decorator/decorators";
+import { Type } from 'class-transformer';
+import {
+  IsArray,
+  ValidateNested,
+} from 'class-validator/types/decorator/decorators';
 
 /**
  * Identificar parâmetros não obrigatórias através da documentação do NFE para setar como opcional ex: "name?: string"
@@ -12,7 +15,7 @@ export class CreateNfeDto {
   @ValidateNested()
   @Type(() => Payment)
   payment: Payment[];
-  
+
   serie: number;
   number: number;
   operationOn: string;
