@@ -47,8 +47,13 @@ export class NfeController {
    * @param id
    * @returns
    */
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.nfeService.remove(+id);
+  @Delete('/:id')
+  async DeleteInvoice(@Param('id') id: string) {
+    const invoiceRemove = await this.nfeService.removeNFE(id);
+    try {
+      return invoiceRemove;
+    } catch (error) {
+      return error.message;
+    }
   }
 }

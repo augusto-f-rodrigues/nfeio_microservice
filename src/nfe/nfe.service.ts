@@ -39,7 +39,10 @@ export class NfeService {
     return data;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} nfe`;
+  async removeNFE(id: string) {
+    const deleteNFE = await this.httpService.delete(
+      `${this.httpService}/${process.env.NEF_COMPANY_ID}/productinvoices/${process.env.NFE_TEST_COMPANY_ID}`,
+    );
+    return deleteNFE;
   }
 }
