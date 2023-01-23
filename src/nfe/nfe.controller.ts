@@ -3,6 +3,7 @@ import {
   Get,
   Post,
   Body,
+  Patch,
   Param,
   Delete,
   Put,
@@ -29,9 +30,9 @@ export class NfeController {
     return this.nfeService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.nfeService.findOne(+id);
+  @Get('/pdf/:id')
+  getNfPdf(@Param('id') id: string) {
+    return this.nfeService.getNfPdf(id);
   }
 
   /**

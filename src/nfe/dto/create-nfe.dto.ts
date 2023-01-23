@@ -1,9 +1,5 @@
 import { Type } from 'class-transformer';
-import {
-  IsArray,
-  ValidateNested,
-} from 'class-validator/types/decorator/decorators';
-
+import { IsArray, ValidateNested } from 'class-validator';
 /**
  * Identificar parâmetros não obrigatórias através da documentação do NFE para setar como opcional ex: "name?: string"
  * https://nfe.io/docs/desenvolvedores/rest-api/nota-fiscal-de-produto-v2/#/Product%20Invoices/V2CompaniesByCompany_idProductinvoicesPost
