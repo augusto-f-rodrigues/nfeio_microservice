@@ -43,7 +43,7 @@ export class NfeService {
           }),
         ),
     );
-    this.logger.log('Invoice', data);
+    this.logger.log('Invoice', JSON.stringify(data));
     return data;
   }
 
@@ -65,7 +65,7 @@ export class NfeService {
           }),
         ),
     );
-    this.logger.log('JSON', data);
+    this.logger.log('JSON', JSON.stringify(data));
     return data;
   }
 
@@ -83,7 +83,7 @@ export class NfeService {
     const { data } = await lastValueFrom<{ data: Nfeio.PdfResponse }>(
       this.httpService
         .get(
-          `${this.http}/${process.env.NFE_TEST_COMPANY_ID}/productinvoices/${id}/pdf?apikey=${process.env.NFE_API_KEY}`,
+          `${this.http}/${process.env.NFE_COMPANY_ID}/productinvoices/${id}/pdf?apikey=${process.env.NFE_API_KEY}`,
         )
         .pipe(
           catchError((error: AxiosError) => {
@@ -92,7 +92,34 @@ export class NfeService {
           }),
         ),
     );
-    this.logger.log('PDF', data);
+    this.logger.log('PDF', JSON.stringify(data));
+    return data;
+  }
+
+  /**
+   * Function to get PFD of created correction letter
+   * @param id Product Invoice Id
+   * @returns a Object typeof Nfeio.GetPdfResponse
+   * @example ```json
+   * {
+   *  "uri": "string"
+   * }
+   * ```
+   */
+  async getCcPdf(id: string): Promise<Nfeio.PdfResponse> {
+    const { data } = await lastValueFrom<{ data: Nfeio.PdfResponse }>(
+      this.httpService
+        .get(
+          `${this.http}/${process.env.NFE_TEST_COMPANY_ID}/productinvoices/${id}/correctionletter/pdf?apikey=${process.env.NFE_API_KEY}`,
+        )
+        .pipe(
+          catchError((error: AxiosError) => {
+            this.logger.error(error.response.data);
+            throw 'An error happened!';
+          }),
+        ),
+    );
+    this.logger.log('PDF', JSON.stringify(data));
     return data;
   }
 
@@ -146,7 +173,7 @@ export class NfeService {
    * ```
    */
   async cancelNf(id: string): Promise<any> {
-    const data  = await lastValueFrom(
+    const data = await lastValueFrom(
       this.httpService
         .delete(
           `${this.http}/${process.env.NFE_TEST_COMPANY_ID}/productinvoices/${id}?apikey=${process.env.NFE_API_KEY}`,
