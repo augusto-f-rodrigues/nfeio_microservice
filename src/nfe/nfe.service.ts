@@ -2,7 +2,7 @@ import { HttpService } from '@nestjs/axios';
 import { AxiosError } from 'axios';
 import { catchError, lastValueFrom } from 'rxjs';
 import { CreateCcNfeDto } from './dto/create-cc-nfe.dto';
-import { Injectable, Logger } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { CreateNfeDto } from './dto/create-nfe.dto';
 
 @Injectable()
@@ -39,7 +39,7 @@ export class NfeService {
         .pipe(
           catchError((error: AxiosError) => {
             this.logger.error(error.response.data);
-            throw 'An error happened!';
+            throw new HttpException(error.response.data, error.response.status);
           }),
         ),
     );
@@ -61,7 +61,7 @@ export class NfeService {
         .pipe(
           catchError((error: AxiosError) => {
             this.logger.error(error.response.data);
-            throw 'An error happened!';
+            throw new HttpException(error.response.data, error.response.status);
           }),
         ),
     );
@@ -88,11 +88,12 @@ export class NfeService {
         .pipe(
           catchError((error: AxiosError) => {
             this.logger.error(error.response.data);
-            throw 'An error happened!';
+            throw new HttpException(error.response.data, error.response.status);
           }),
         ),
     );
     this.logger.log('PDF', JSON.stringify(data));
+    console.log(data);
     return data;
   }
 
@@ -115,7 +116,7 @@ export class NfeService {
         .pipe(
           catchError((error: AxiosError) => {
             this.logger.error(error.response.data);
-            throw 'An error happened!';
+            throw new HttpException(error.response.data, error.response.status);
           }),
         ),
     );
@@ -151,7 +152,10 @@ export class NfeService {
         .pipe(
           catchError((error: AxiosError) => {
             this.logger.error(error.response.data);
-            throw 'An error happened!';
+            // Here you can throw a custom error
+            throw new HttpException('custom message', HttpStatus.BAD_REQUEST, {
+              cause: new Error('Cause Error'),
+            });
           }),
         ),
     );
@@ -181,7 +185,7 @@ export class NfeService {
         .pipe(
           catchError((error: AxiosError) => {
             this.logger.error(error.response.data);
-            throw 'An error happened!';
+            throw new HttpException(error.response.data, error.response.status);
           }),
         ),
     );

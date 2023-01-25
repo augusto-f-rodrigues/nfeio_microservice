@@ -59,7 +59,6 @@ export class NfeController {
   getCcPdf(@Param('id') id: string) {
     return this.nfeService.getCcPdf(id);
   }
-
   /**
    * Request to send a correction letter to invoice
    * @param id Product Invoice Id
