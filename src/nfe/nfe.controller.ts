@@ -15,6 +15,10 @@ import { CreateCcNfeDto } from './dto/create-cc-nfe.dto';
 
 @Controller('nfe')
 export class NfeController {
+  /**
+   * Constructor
+   * @param nfeService Nfe Services
+   */
   constructor(private readonly nfeService: NfeService) {}
 
   /**
@@ -23,44 +27,47 @@ export class NfeController {
    * @returns
    */
   @Post()
-  create(@Body() createNfeDto: CreateNfeDto) {
-    return this.nfeService.create(createNfeDto);
+  createNf(@Body() createNfeDto: CreateNfeDto) {
+    return this.nfeService.createNf(createNfeDto);
   }
 
+  /**
+   * Request to get invoice JSON
+   * @param id Product Invoice Id
+   * @returns Result of function getNfJson
+   */
   @Get('/json/:id')
   getNfJson(@Param('id') id: string) {
     return this.nfeService.getNfJson(id);
   }
 
+  /**
+   * Request to get invoice PDF
+   * @param id Product Invoice Id
+   * @returns Result of function getNfPdf
+   */
   @Get('/pdf/:id')
   getNfPdf(@Param('id') id: string) {
     return this.nfeService.getNfPdf(id);
   }
 
   /**
-   * Send a correction letter to invoice
-
+   * Request to send a correction letter to invoice
    * @param id Product Invoice Id
-   * @returns 
+   * @returns Result of function createCc
    */
   @Put(':id')
   async createCc(@Param('id') id: string, @Body() createCcDTO: CreateCcNfeDto) {
     return await this.nfeService.createCc(id, createCcDTO);
   }
 
-
   /**
    * Request to cancel invoice
-   * @param id
-   * @returns
+   * @param id Product Invoice Id
+   * @returns Result of function createCc
    */
-  @Delete('/:id')
-  async DeleteInvoice(@Param('id') id: string) {
-    const invoiceRemove = await this.nfeService.removeNFE(id);
-    try {
-      return invoiceRemove;
-    } catch (error) {
-      return error.message;
-    }
+  @Delete(':id')
+  async cancelNf(@Param('id') id: string) {
+    return await this.nfeService.cancelNf(id);
   }
 }

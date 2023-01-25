@@ -1,19 +1,12 @@
 import { HttpService } from '@nestjs/axios';
-
-import { Injectable } from '@nestjs/common';
-
 import { AxiosError } from 'axios';
 import { catchError, lastValueFrom } from 'rxjs';
 import { CreateCcNfeDto } from './dto/create-cc-nfe.dto';
-
 import { Injectable, Logger } from '@nestjs/common';
-
 import { CreateNfeDto } from './dto/create-nfe.dto';
-import { lastValueFrom } from 'rxjs';
 
 @Injectable()
 export class NfeService {
-
   /**
    * Logger
    */
@@ -28,54 +21,20 @@ export class NfeService {
    * Movidesk URL
    * @type {string}
    */
-  http: string = process.env.NFE_URL;
-
-
-  create(createNfeDto: CreateNfeDto) {
-    return 'This action adds a new nfe';
-  }
-
-  async getNfJson(id: string): Promise<any> {
-    const { data } = await lastValueFrom(
-      this.httpService.get(
-        `${this.http}/${process.env.NFE_COMPANY_ID}/productinvoices/${id}?apikey=${process.env.NFE_API_KEY}`,
-      ),
-    );
-
-    return data;
-  }
-
-  async getNfPdf(id: string): Promise<any> {
-    const { data } = await lastValueFrom(
-      this.httpService.get(
-        `${this.http}/${process.env.NFE_COMPANY_ID}/productinvoices/${id}/pdf?apikey=${process.env.NFE_API_KEY}`,
-      ),
-    );
-
-    return data;
-  }
-
+  http: string = process.env.NFE_BASE_URL;
 
   /**
-   * Function to create a correction letter
-   * @param id Product Invoice Id
-   * @param createCcDTO Reason to create a correction letter
-   * @returns a object like this:
-   * ```ts
-   * {
-   *    accountId: string;
-   *    companyId: string;
-   *    productInvoiceId: string;
-   *    reason: string;
-   * }
-   * ```
+   * Function to create a invoice
+   * @param createNfeDto Json to create invoice
+   * @returns a Object typeof Nfeio.GetJsonResponse
    */
-  async createCc(id: string, createCcDTO: CreateCcNfeDto) {
-    const { data } = await lastValueFrom<{ data: Nfeio.CreateCcResponse }>(
+  async createNf(createNfeDto: CreateNfeDto): Promise<Nfeio.JsonResponse> {
+    const { data } = await lastValueFrom<{ data: Nfeio.JsonResponse }>(
       this.httpService
-        .put(
-          `${process.env.NFE_BASE_URL}/${process.env.NFE_COMPANY_ID}/productinvoices/${id}/correctionletter?apikey=${process.env.NFE_API_KEY}`,
-          { reason: createCcDTO },
+        .post(
+          `${this.http}/${process.env.NFE_TEST_COMPANY_ID}/productinvoices?apikey=${process.env.NFE_API_KEY}`,
+          createNfeDto,
+          { headers: { 'Content-Type': 'application/json' } },
         )
         .pipe(
           catchError((error: AxiosError) => {
@@ -84,16 +43,122 @@ export class NfeService {
           }),
         ),
     );
-
+    this.logger.log('Invoice', data);
     return data;
   }
 
-
-  async removeNFE(id: string) {
-    const deleteNFE = await this.httpService.delete(
-      `${this.httpService}/${process.env.NEF_COMPANY_ID}/productinvoices/${process.env.NFE_TEST_COMPANY_ID}`,
+  /**
+   * Function to get JSON of created invoice
+   * @param id Product Invoice Id
+   * @returns a Object typeof Nfeio.GetJsonResponse
+   */
+  async getNfJson(id: string): Promise<Nfeio.JsonResponse> {
+    const { data } = await lastValueFrom<{ data: Nfeio.JsonResponse }>(
+      this.httpService
+        .get(
+          `${this.http}/${process.env.NFE_TEST_COMPANY_ID}/productinvoices/${id}?apikey=${process.env.NFE_API_KEY}`,
+        )
+        .pipe(
+          catchError((error: AxiosError) => {
+            this.logger.error(error.response.data);
+            throw 'An error happened!';
+          }),
+        ),
     );
-    return deleteNFE;
+    this.logger.log('JSON', data);
+    return data;
+  }
 
+  /**
+   * Function to get PFD of created invoice
+   * @param id Product Invoice Id
+   * @returns a Object typeof Nfeio.GetPdfResponse
+   * @example ```json
+   * {
+   *  "uri": "string"
+   * }
+   * ```
+   */
+  async getNfPdf(id: string): Promise<Nfeio.PdfResponse> {
+    const { data } = await lastValueFrom<{ data: Nfeio.PdfResponse }>(
+      this.httpService
+        .get(
+          `${this.http}/${process.env.NFE_TEST_COMPANY_ID}/productinvoices/${id}/pdf?apikey=${process.env.NFE_API_KEY}`,
+        )
+        .pipe(
+          catchError((error: AxiosError) => {
+            this.logger.error(error.response.data);
+            throw 'An error happened!';
+          }),
+        ),
+    );
+    this.logger.log('PDF', data);
+    return data;
+  }
+
+  /**
+   * Function to create a correction letter
+   * @param id Product Invoice Id
+   * @param createCcDTO Reason to create a correction letter
+   * @returns a Object typeof Nfeio.CreateCcResponse
+   * @example ```json
+   * {
+   *    "accountId": "string",
+   *    "companyId": "string",
+   *    "productInvoiceId": "string",
+   *    "reason": "string"
+   * }
+   * ```
+   */
+  async createCc(
+    id: string,
+    createCcDTO: CreateCcNfeDto,
+  ): Promise<Nfeio.CreateCcResponse> {
+    const { data } = await lastValueFrom<{ data: Nfeio.CreateCcResponse }>(
+      this.httpService
+        .put(
+          `${this.http}/${process.env.NFE_COMPANY_ID}/productinvoices/${id}/correctionletter?apikey=${process.env.NFE_API_KEY}`,
+          createCcDTO,
+          { headers: { 'Content-Type': 'application/json' } },
+        )
+        .pipe(
+          catchError((error: AxiosError) => {
+            this.logger.error(error.response.data);
+            throw 'An error happened!';
+          }),
+        ),
+    );
+    this.logger.log('CC-e create for id', id);
+    return data;
+  }
+
+  /**
+   * Function to cancel a invoice
+   * @param id Product Invoice Id
+   * @returns a Object typeof Nfeio.CancelNfResponse
+   * @example ```json
+   * {
+   *    "accountId": "string",
+   *    "companyId": "string",
+   *    "productInvoiceId": "string",
+   *    "reason": "string"
+   * }
+   * ```
+   */
+  async cancelNf(id: string): Promise<any> {
+    const data  = await lastValueFrom(
+      this.httpService
+        .delete(
+          `${this.http}/${process.env.NFE_TEST_COMPANY_ID}/productinvoices/${id}?apikey=${process.env.NFE_API_KEY}`,
+        )
+        .pipe(
+          catchError((error: AxiosError) => {
+            this.logger.error(error.response.data);
+            throw 'An error happened!';
+          }),
+        ),
+    );
+    this.logger.log('Invoice Cancelled', id);
+    return data;
   }
 }
