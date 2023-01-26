@@ -43,7 +43,8 @@ export class NfeService {
           }),
         ),
     );
-    this.logger.log('Invoice', JSON.stringify(data));
+    this.logger.log('JSON Invoice', JSON.stringify(data));
+    this.logger.log('ID Invoice', JSON.stringify(data.id));
     return data;
   }
 
@@ -83,7 +84,7 @@ export class NfeService {
     const { data } = await lastValueFrom<{ data: Nfeio.PdfResponse }>(
       this.httpService
         .get(
-          `${this.http}/${process.env.NFE_COMPANY_ID}/productinvoices/${id}/pdf?apikey=${process.env.NFE_API_KEY}`,
+          `${this.http}/${process.env.NFE_TESTE_COMPANY_ID}/productinvoices/${id}/pdf?apikey=${process.env.NFE_API_KEY}`,
         )
         .pipe(
           catchError((error: AxiosError) => {
@@ -145,17 +146,14 @@ export class NfeService {
     const { data } = await lastValueFrom<{ data: Nfeio.CreateCcResponse }>(
       this.httpService
         .put(
-          `${this.http}/${process.env.NFE_COMPANY_ID}/productinvoices/${id}/correctionletter?apikey=${process.env.NFE_API_KEY}`,
+          `${this.http}/${process.env.NFE_TESTE_COMPANY_ID}/productinvoices/${id}/correctionletter?apikey=${process.env.NFE_API_KEY}`,
           createCcDTO,
           { headers: { 'Content-Type': 'application/json' } },
         )
         .pipe(
           catchError((error: AxiosError) => {
             this.logger.error(error.response.data);
-            // Here you can throw a custom error
-            throw new HttpException('custom message', HttpStatus.BAD_REQUEST, {
-              cause: new Error('Cause Error'),
-            });
+            throw new HttpException(error.response.data, error.response.status);
           }),
         ),
     );
