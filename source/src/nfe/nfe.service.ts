@@ -3,7 +3,9 @@ import { AxiosError } from 'axios';
 import { catchError, lastValueFrom } from 'rxjs';
 import { CreateCcNfeDto } from './dto/create-cc-nfe.dto';
 import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
-import { CreateNfeDto } from './dto/create-nfe.dto';
+import { CreateOngoingNfeDto } from './dto/create-ongoing-nfe.dto';
+import { CreateOutgoingNfeDto } from './dto/create-outgoing-nfe.dto';
+
 
 @Injectable()
 export class NfeService {
@@ -24,11 +26,36 @@ export class NfeService {
   http: string = process.env.NFE_BASE_URL;
 
   /**
-   * Function to create a invoice
+   * Function to create a ongoing invoice
    * @param createNfeDto Json to create invoice
    * @returns a Object typeof Nfeio.GetJsonResponse
    */
-  async createNf(createNfeDto: CreateNfeDto): Promise<Nfeio.JsonResponse> {
+  async createOngoingNf(createNfeDto: CreateOngoingNfeDto): Promise<Nfeio.JsonResponse> {
+    const { data } = await lastValueFrom<{ data: Nfeio.JsonResponse }>(
+      this.httpService
+        .post(
+          `${this.http}/${process.env.NFE_TEST_COMPANY_ID}/productinvoices?apikey=${process.env.NFE_API_KEY}`,
+          createNfeDto,
+          { headers: { 'Content-Type': 'application/json' } },
+        )
+        .pipe(
+          catchError((error: AxiosError) => {
+            this.logger.error(error.response.data);
+            throw new HttpException(error.response.data, error.response.status);
+          }),
+        ),
+    );
+    this.logger.log('JSON Invoice', JSON.stringify(data));
+    this.logger.log('ID Invoice', JSON.stringify(data.id));
+    return data;
+  }
+
+  /**
+   * Function to create a outgoing invoice
+   * @param createNfeDto Json to create invoice
+   * @returns a Object typeof Nfeio.GetJsonResponse
+   */
+  async createOutgoingNf(createNfeDto: CreateOutgoingNfeDto): Promise<Nfeio.JsonResponse> {
     const { data } = await lastValueFrom<{ data: Nfeio.JsonResponse }>(
       this.httpService
         .post(

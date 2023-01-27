@@ -8,11 +8,12 @@ import {
   Put,
 } from '@nestjs/common';
 import { NfeService } from './nfe.service';
-import { CreateNfeDto } from './dto/create-nfe.dto';
+import { CreateOngoingNfeDto } from './dto/create-ongoing-nfe.dto';
 
 import { CreateCcNfeDto } from './dto/create-cc-nfe.dto';
+import { CreateOutgoingNfeDto } from './dto/create-outgoing-nfe.dto';
 
-@Controller('nfe')
+@Controller('nfeio')
 export class NfeController {
   /**
    * Constructor
@@ -21,21 +22,31 @@ export class NfeController {
   constructor(private readonly nfeService: NfeService) {}
 
   /**
-   * Request to create invoice
+   * Request to create ongoing invoice
    * @param createNfeDto
    * @returns
    */
-  @Post()
-  createNf(@Body() createNfeDto: CreateNfeDto) {
-    return this.nfeService.createNf(createNfeDto);
+  @Post('/productInvoice/ongoing')
+  createOngoingNf(@Body() createNfeDto: CreateOngoingNfeDto) {
+    return this.nfeService.createOngoingNf(createNfeDto);
   }
+
+   /**
+   * Request to create outgoing invoice
+   * @param createNfeDto
+   * @returns
+   */
+   @Post('/productInvoice/outgoing')
+   createOutgoingNf(@Body() createNfeDto: CreateOutgoingNfeDto) {
+     return this.nfeService.createOutgoingNf(createNfeDto);
+   }
 
   /**
    * Request to get invoice JSON
    * @param id Product Invoice Id
    * @returns Result of function getNfJson
    */
-  @Get('/json/:id')
+  @Get('/productInvoice/:id/json')
   getNfJson(@Param('id') id: string) {
     return this.nfeService.getNfJson(id);
   }
@@ -45,7 +56,7 @@ export class NfeController {
    * @param id Product Invoice Id
    * @returns Result of function getNfPdf
    */
-  @Get('/pdf/:id')
+  @Get('/productInvoice/:id/pdf')
   getNfPdf(@Param('id') id: string) {
     return this.nfeService.getNfPdf(id);
   }
@@ -55,10 +66,11 @@ export class NfeController {
    * @param id Product Correction Letter Id
    * @returns Result of function getCcPdf
    */
-  @Get('/cc/pdf/:id')
+  @Get('/cc/:id/pdf')
   getCcPdf(@Param('id') id: string) {
     return this.nfeService.getCcPdf(id);
   }
+
   /**
    * Request to send a correction letter to invoice
    * @param id Product Invoice Id
@@ -74,7 +86,7 @@ export class NfeController {
    * @param id Product Invoice Id
    * @returns Result of function createCc
    */
-  @Delete(':id')
+  @Delete('/productInvoice/:id')
   async cancelNf(@Param('id') id: string) {
     return await this.nfeService.cancelNf(id);
   }

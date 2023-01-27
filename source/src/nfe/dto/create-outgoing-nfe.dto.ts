@@ -211,7 +211,37 @@ class PaymentDetail {
   amount: number;
 }
 
-export class CreateNfeDto {
+class DocumentElectronicInvoice {
+  @IsString()
+  accessKey: string;
+}
+
+class DocumentInvoiceReference {
+  @IsString()
+  series: string;
+  @IsString()
+  number: string;
+}
+
+class TaxDocumentsReference {
+  @IsObject()
+  @Type(() => DocumentElectronicInvoice)
+  documentElectronicInvoice: DocumentElectronicInvoice;
+  @IsObject()
+  @Type(() => DocumentInvoiceReference)
+  documentInvoiceReference: DocumentInvoiceReference;
+}
+
+class AdditionalInformation {
+  @IsString()
+  taxpayer: string;
+  @IsArray()
+  @ValidateNested()
+  @Type(() => TaxDocumentsReference)
+  taxDocumentsReference: TaxDocumentsReference[];
+}
+
+export class CreateOutgoingNfeDto {
   @IsObject()
   @Type(() => Buyer)
   buyer: Buyer;
@@ -238,4 +268,7 @@ export class CreateNfeDto {
   @ValidateNested()
   @Type(() => Payment)
   payment: Payment[];
+  @IsObject()
+  @Type(() => AdditionalInformation)
+  additionalInformation: AdditionalInformation;
 }
